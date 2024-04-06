@@ -10,7 +10,6 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.client.BaseClient;
 
-import java.net.URL;
 import java.net.URLEncoder;
 
 @Service
@@ -58,7 +57,7 @@ public class EndpointHitClient extends BaseClient {
             return "";
         } else {
 
-            return arrayKey+ "="+ StringUtils.arrayToDelimitedString(stringArray, "&"+arrayKey+"=");
+            return arrayKey + "=" + StringUtils.arrayToDelimitedString(stringArray, "&" + arrayKey + "=");
         }
 
     }

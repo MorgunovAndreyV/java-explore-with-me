@@ -9,7 +9,6 @@ import ru.practicum.viewstat.ViewStatsMapper;
 
 import java.net.URLDecoder;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
