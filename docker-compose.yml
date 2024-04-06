@@ -1,13 +1,30 @@
 version: '3.1'
 services:
   stats-server:
+    build: ./ewm-stats/ewm-stats-server
     ports:
       - "9090:9090"
+    depends_on:
+      - stats-db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/EwmStatsDb
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
 
   stats-db:
     image: postgres:14-alpine
+    volumes:
+      - /var/lib/postgresql/data/
+      - ./ewm-stats/ewm-stats-server/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "6541:5432"
+    environment:
+      - POSTGRES_DB=EwmStatsDb
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
 
-  ewm-service:
+  gateway:
+    build: ./ewm-stats/ewm-stats-gateway
     ports:
       - "8080:8080"
 
