@@ -1,5 +1,8 @@
 package ru.practicum.endpointhit;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class EndpointHitMapper {
 
     public static EndpointHitDto toDto(EndpointHit endpointHit) {

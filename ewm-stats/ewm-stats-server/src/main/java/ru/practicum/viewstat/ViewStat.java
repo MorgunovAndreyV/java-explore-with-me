@@ -12,7 +12,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "VIEWSTATS")
+@Table(name = "viewstats")
 public class ViewStat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

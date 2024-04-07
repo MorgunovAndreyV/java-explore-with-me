@@ -1,8 +1,10 @@
 package ru.practicum.viewstat;
 
+import lombok.experimental.UtilityClass;
 import ru.practicum.endpointhit.EndpointHit;
 import ru.practicum.endpointhit.EndpointHitDto;
 
+@UtilityClass
 public class ViewStatsMapper {
 
     public static ViewStatDto toDto(ViewStat viewStat) {
