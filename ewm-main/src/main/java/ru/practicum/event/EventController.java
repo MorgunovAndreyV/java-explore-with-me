@@ -104,8 +104,8 @@ public class EventController {
 
         ResponseEntity<List<ViewStatDto>> responseViewStatContents = endpointHitClient
                 .getStatsExplicit(
-                        rangeStart == null ? "1970-01-01 00:00:00" : rangeStart,
-                        rangeEnd == null ? "2035-05-05 00:00:00" : rangeEnd,
+                        rangeStart == null ? DEFAULT_START_DATE : rangeStart,
+                        rangeEnd == null ? DEFAULT_END_DATE : rangeEnd,
                         eventsOut.stream()
                                 .map(eventShortDto -> "/events/" + eventShortDto.getId()).collect(Collectors.toSet())
                                 .toArray(new String[0]), false);

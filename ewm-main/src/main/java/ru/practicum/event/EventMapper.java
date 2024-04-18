@@ -12,7 +12,7 @@ import java.time.format.DateTimeFormatter;
 
 @UtilityClass
 public class EventMapper {
-    public static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
 
     public static Event toEntity(NewEventDto eventDto) {

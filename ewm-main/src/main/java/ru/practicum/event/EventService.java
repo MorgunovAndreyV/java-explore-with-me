@@ -29,7 +29,7 @@ public class EventService {
     private final UserService userService;
     private final CategoryService categoryService;
     private final LocationService locationService;
-    public static DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    public static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Event saveEvent(Event event) {
         return eventRepository.save(event);
