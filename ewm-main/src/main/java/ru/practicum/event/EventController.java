@@ -13,7 +13,9 @@ import ru.practicum.stat.client.EndpointHitClient;
 import ru.practicum.viewstat.ViewStatDto;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -106,8 +108,7 @@ public class EventController {
                         rangeEnd == null ? "2035-05-05 00:00:00" : rangeEnd,
                         eventsOut.stream()
                                 .map(eventShortDto -> "/events/" + eventShortDto.getId()).collect(Collectors.toSet())
-                                .toArray(new String[0])
-                        , false);
+                                .toArray(new String[0]), false);
 
         if (responseViewStatContents.hasBody()) {
             List<ViewStatDto> viewStats = responseViewStatContents.getBody();

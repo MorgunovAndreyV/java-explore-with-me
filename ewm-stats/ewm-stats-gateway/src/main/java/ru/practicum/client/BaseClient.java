@@ -79,16 +79,18 @@ public class BaseClient {
     }
 
     private <T> ResponseEntity<List<ViewStatDto>> makeAndSendRequestTest(HttpMethod method, String path,
-                                                                     @Nullable Map<String, Object> parameters, @Nullable T body) {
+                                                                         @Nullable Map<String, Object> parameters, @Nullable T body) {
         HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders());
 
         ResponseEntity<List<ViewStatDto>> ewmServerResponse;
         try {
             if (parameters != null) {
                 ewmServerResponse = rest.exchange(path, method, requestEntity,
-                        new ParameterizedTypeReference<List<ViewStatDto>>() {}, parameters);
+                        new ParameterizedTypeReference<List<ViewStatDto>>() {
+                        }, parameters);
             } else {
-                ewmServerResponse = rest.exchange(path, method, requestEntity, new ParameterizedTypeReference<List<ViewStatDto>>() {});
+                ewmServerResponse = rest.exchange(path, method, requestEntity, new ParameterizedTypeReference<List<ViewStatDto>>() {
+                });
             }
         } catch (HttpStatusCodeException e) {
             log.error("Ошибка статуса ответа запроса клиента статистики: "
