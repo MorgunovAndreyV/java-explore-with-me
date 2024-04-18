@@ -1,6 +1,7 @@
 package ru.practicum.endpointhit;
 
 import lombok.experimental.UtilityClass;
+import ru.practicum.endpointhit.model.EndpointHit;
 
 @UtilityClass
 public class EndpointHitMapper {

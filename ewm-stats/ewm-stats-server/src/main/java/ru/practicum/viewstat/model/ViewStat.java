@@ -1,4 +1,4 @@
-package ru.practicum.viewstat;
+package ru.practicum.viewstat.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

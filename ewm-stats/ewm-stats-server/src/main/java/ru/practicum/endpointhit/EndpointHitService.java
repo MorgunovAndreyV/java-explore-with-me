@@ -3,7 +3,8 @@ package ru.practicum.endpointhit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.viewstat.ViewStat;
+import ru.practicum.endpointhit.model.EndpointHit;
+import ru.practicum.viewstat.model.ViewStat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
