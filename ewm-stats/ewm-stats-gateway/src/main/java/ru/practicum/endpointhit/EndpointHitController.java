@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.exception.ViewStatControllerBadRequestException;
+import ru.practicum.stat.client.EndpointHitClient;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @RestController
@@ -38,7 +40,7 @@ public class EndpointHitController {
 
         try {
             //format example 2020-05-05 00:00:00
-            DateTimeFormatter.ofPattern(format);
+            LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(format));
             return true;
 
         } catch (IllegalArgumentException e) {

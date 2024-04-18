@@ -23,17 +23,31 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=password
 
-  gateway:
-    build: ./ewm-stats/ewm-stats-gateway
-    ports:
-      - "8081:8081"
+  #gateway:
+  #  build: ./ewm-stats/ewm-stats-gateway
+  #  ports:
+  #    - "8081:8081"
 
   ewm-db:
     image: postgres:14-alpine
+    volumes:
+      - /var/lib/postgresql/data/
+      - ./ewm-main/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "6542:5432"
+    environment:
+      - POSTGRES_DB=EwmMainDb
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
 
   ewm-service:
     build: ./ewm-main
     depends_on:
       - ewm-db
+      #- gateway
     ports:
       - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/EwmMainDb
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password

@@ -1,4 +1,4 @@
-package ru.practicum.endpointhit;
+package ru.practicum.endpointhit.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

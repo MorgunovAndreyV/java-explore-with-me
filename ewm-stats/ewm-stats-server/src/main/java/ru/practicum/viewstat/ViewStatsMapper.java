@@ -1,8 +1,9 @@
 package ru.practicum.viewstat;
 
 import lombok.experimental.UtilityClass;
-import ru.practicum.endpointhit.EndpointHit;
 import ru.practicum.endpointhit.EndpointHitDto;
+import ru.practicum.endpointhit.model.EndpointHit;
+import ru.practicum.viewstat.model.ViewStat;
 
 @UtilityClass
 public class ViewStatsMapper {
