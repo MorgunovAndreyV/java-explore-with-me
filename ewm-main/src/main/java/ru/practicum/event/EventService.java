@@ -9,13 +9,16 @@ import org.springframework.stereotype.Service;
 import ru.practicum.category.CategoryService;
 import ru.practicum.comparators.EventComparators;
 import ru.practicum.event.model.*;
+import ru.practicum.exception.CategoryValidationException;
 import ru.practicum.exception.EventValidationException;
 import ru.practicum.exception.RecordNotFoundException;
 import ru.practicum.location.LocationService;
+import ru.practicum.subscription.SubscriptionService;
 import ru.practicum.user.UserService;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,6 +32,8 @@ public class EventService {
     private final UserService userService;
     private final CategoryService categoryService;
     private final LocationService locationService;
+    private final SubscriptionService subscriptionService;
+
     public static final DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Event saveEvent(Event event) {
@@ -42,14 +47,12 @@ public class EventService {
         event.setInitiator(userService.getUserById(userId));
         event.setLocation(locationService.addNew(event.getLocation()));
         event.setCreatedOn(LocalDateTime.now());
-        event.setState(State.WAITING);
+
         event.setConfirmedRequests(0);
         event.setViews(0);
-
-        if (!event.getRequestModeration()) {
-            event.sendToReview();
-        }
-
+        log.info("Новое событие с request moderation:" + event.getRequestModeration() + " . Id:" + event.getId());
+        event.setState(State.PENDING);
+        log.info("Новое событие с request moderation:" + event.getRequestModeration() + " . Статус:" + event.getState() + " . Id:" + event.getId());
         Event newEvent = eventRepository.save(event);
 
         log.info("Новое событие добавлено успешно. id:" + event.getId());
@@ -65,13 +68,19 @@ public class EventService {
         EventMapper.fillFromDto(eventDto, eventFromBase);
 
         if (eventDto.getStateAction() != null) {
+            log.info("Изменение статуса события с id:" + eventFromBase.getId() +
+                    ". Текущий статус " + eventFromBase.getState() + " . Действие: " + eventDto.getStateAction());
+
             if (userId.equals(eventFromBase.getInitiator().getId())) {
                 if (StateAction.SEND_TO_REVIEW.equals(getStateAction(eventDto.getStateAction()))) {
                     eventFromBase.sendToReview();
+                    log.info("Изменение статуса события с id:" + eventFromBase.getId() +
+                            ". На рассмотрении.");
 
                 } else if (StateAction.CANCEL_REVIEW.equals(getStateAction(eventDto.getStateAction()))) {
                     eventFromBase.cancelReview();
-
+                    log.info("Изменение статуса события с id:" + eventFromBase.getId() +
+                            ". Отменено.");
                 }
 
             }
@@ -113,7 +122,7 @@ public class EventService {
 
         eventRepository.save(eventFromBase);
 
-        log.info("Запись категории изменена успешно. id:" + eventFromBase.getId());
+        log.info("Запись события изменена успешно. id:" + eventFromBase.getId());
 
 
         return eventFromBase;
@@ -129,9 +138,6 @@ public class EventService {
         if (eventsFromBase.isEmpty()) {
             throw new RecordNotFoundException("Событие с id " + eventId + " не найдено");
         }
-
-        //получение количества просмотров события
-        //получение подтвержденных запросов
 
         return eventsFromBase.get(0);
     }
@@ -156,30 +162,40 @@ public class EventService {
     public Event getUsersEventFull(Long userId, Long eventId) {
         userService.getUserById(userId);
 
-        Event eventFromBase = eventRepository.findByUserIdAndEventId(userId, eventId);
+        BooleanBuilder booleanBuilder = new BooleanBuilder(QEvent.event.initiator.id.eq(userId));
+        booleanBuilder.and(QEvent.event.id.eq(eventId));
 
-        if (eventFromBase == null) {
+        List<Event> eventsFromBase = StreamSupport.stream(
+                        eventRepository.findAll(booleanBuilder).spliterator(), false)
+                .collect(Collectors.toList());
+
+        if (eventsFromBase.isEmpty()) {
             throw new RecordNotFoundException("Событие с id " + eventId + "для пользователя " +
                     userId + " не найдено.");
         }
-        return eventFromBase;
+
+        return eventsFromBase.get(0);
     }
 
     public List<Event> getUserEventsPaginated(Long userId, Integer from, Integer size) {
+        validatePagination(from, size);
+        BooleanBuilder booleanBuilder = new BooleanBuilder(QEvent.event.initiator.id.eq(userId));
         PageRequest pageRequest;
 
         if (size != null && from != null) {
             pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
-            return eventRepository.findByUserId(userId, pageRequest).getContent();
+            return eventRepository.findAll(booleanBuilder, pageRequest).getContent();
 
         } else {
-            return eventRepository.findByUserId(userId);
+            return StreamSupport.stream(eventRepository.findAll(booleanBuilder).spliterator(), false)
+                    .collect(Collectors.toList());
         }
 
     }
 
     public List<Event> getAdminEventDataPaginated(Long[] userIds, Set<State> states, Integer[] categories, String rangeStart,
                                                   String rangeEnd, Integer from, Integer size) {
+        validatePagination(from, size);
         PageRequest pageRequest;
         BooleanBuilder bd = new BooleanBuilder();
 
@@ -218,6 +234,8 @@ public class EventService {
     public List<Event> getEventsPaginated(String searchText, Integer[] categories, Boolean paid, String rangeStart,
                                           String rangeEnd, Boolean onlyAvailable, String sortType,
                                           Integer from, Integer size) {
+        validatePagination(from, size);
+
         List<Event> resultList;
         PageRequest pageRequest;
         BooleanBuilder bd = new BooleanBuilder(QEvent.event.state.eq(State.PUBLISHED));
@@ -443,6 +461,57 @@ public class EventService {
             } else if (!(eventDto.getDescription().length() >= 20 && eventDto.getDescription().length() <= 7000)) {
                 throw new EventValidationException("Некорректная длина заголовка");
             }
+        }
+
+    }
+
+    Set<Event> getUsersEventsForSubsPaginated(Long userId, Integer from, Integer size) {
+        return getUsersEventsForSubsPaginated(userId, null, from, size);
+    }
+
+    Set<Event> getUsersEventsForSubsPaginated(Long userId, Long targetUserId, Integer from, Integer size) {
+        if (userId == null) {
+            throw new EventValidationException("Не указан userId пользователя приватного сервиса");
+        }
+
+        validatePagination(from, size);
+
+        PageRequest pageRequest;
+        Set<Event> resultList = new HashSet<>();
+
+        if (size != null && from != null) {
+            pageRequest = PageRequest.of(from > 0 ? from / size : 0, size);
+
+            if (targetUserId != null) {
+                resultList.addAll(eventRepository.findBySubscriberPaginated(userId,
+                        targetUserId,
+                        ru.practicum.request.model.State.CONFIRMED.name(), LocalDateTime.now(),
+                        pageRequest).getContent());
+            } else {
+                resultList.addAll(eventRepository.findBySubscriberPaginated(userId,
+                        ru.practicum.request.model.State.CONFIRMED.name(), LocalDateTime.now(), pageRequest
+                ).getContent());
+            }
+
+        } else {
+            if (targetUserId != null) {
+                resultList.addAll(eventRepository.findBySubscriber(userId,
+                        targetUserId,
+                        ru.practicum.request.model.State.CONFIRMED.name(), LocalDateTime.now()));
+            } else {
+                resultList.addAll(eventRepository.findBySubscriber(userId,
+                        ru.practicum.request.model.State.CONFIRMED.name(), LocalDateTime.now()));
+            }
+
+        }
+
+        return resultList;
+    }
+
+    private void validatePagination(Integer numberFrom, Integer pageSize) {
+        if ((pageSize != null && numberFrom != null) && (pageSize < 1 || numberFrom < 0)) {
+            throw new CategoryValidationException("Некорректные параметры запроса с постраничным выводом");
+
         }
 
     }

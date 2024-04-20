@@ -196,7 +196,7 @@ public class Event {
     }
 
     public void publishEvent() {
-        if (State.PENDING.equals(this.state) || State.WAITING.equals(this.state)) {
+        if (State.PENDING.equals(this.state)) {
             state = State.PUBLISHED;
             publishedOn = LocalDateTime.now();
 
@@ -216,7 +216,7 @@ public class Event {
     }
 
     public void sendToReview() {
-        if (State.WAITING.equals(this.state) || State.CANCELED.equals(this.state)) {
+        if (State.CANCELED.equals(this.state)) {
             state = State.PENDING;
         } else {
             throw new DataIntegrityViolationException("Невозможно отправить на модерацию событие в состоянии " + state);
@@ -225,7 +225,7 @@ public class Event {
     }
 
     public void cancelReview() {
-        if (State.PENDING.equals(this.state) || State.WAITING.equals(this.state)) {
+        if (State.PENDING.equals(this.state)) {
             state = State.CANCELED;
         } else {
             throw new DataIntegrityViolationException("Невозможно отменить модерацию события в состоянии " + state);

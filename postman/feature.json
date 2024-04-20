@@ -1,0 +1,2840 @@
+{
+	"info": {
+		"_postman_id": "c5ec2105-803b-443a-8f96-67fea662051b",
+		"name": "Test EWM - Feature Subscriptions",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8420594"
+	},
+	"item": [
+		{
+			"name": "Friendship Request",
+			"item": [
+				{
+					"name": "Bad request checks",
+					"item": [
+						{
+							"name": "Создание заявки в друзья - не указан параметр targetUserId",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const newuser = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.request.removeQueryParams(['targetUserId']);\r",
+											"        pm.collectionVariables.set('uid', newuser.id);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/{{uid}}/friendshiprequests",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"{{uid}}",
+										"friendshiprequests"
+									],
+									"query": [
+										{
+											"key": "targetUserId",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Подтверждение несуществующей заявки в друзья",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetnewuser = await api.addUser(rnd.getUser());\r",
+											"\r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetnewuser.id);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/{{uid1}}/friendshiprequests/{{uid}}/confirm",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"{{uid1}}",
+										"friendshiprequests",
+										"{{uid}}",
+										"confirm"
+									],
+									"query": [
+										{
+											"key": "targetUserId",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Отклонение несуществующей заявки в друзья",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetnewuser = await api.addUser(rnd.getUser());\r",
+											"\r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetnewuser.id);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/{{uid1}}/friendshiprequests/{{uid}}/decline",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"{{uid1}}",
+										"friendshiprequests",
+										"{{uid}}",
+										"decline"
+									],
+									"query": [
+										{
+											"key": "targetUserId",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Отмена несуществующей заявки в друзья",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetnewuser = await api.addUser(rnd.getUser());\r",
+											"\r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetnewuser.id);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/{{uid}}/friendshiprequests/{{uid1}}/cancel",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"{{uid}}",
+										"friendshiprequests",
+										"{{uid1}}",
+										"cancel"
+									],
+									"query": [
+										{
+											"key": "targetUserId",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Correct requests",
+					"item": [
+						{
+							"name": "Создание заявки в друзья",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const newuser = await api.addUser(rnd.getUser());\r",
+											"        const newuser2 = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', newuser.id);\r",
+											"        pm.collectionVariables.set('uid1', newuser2.id);\r",
+											"        \r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json\", function () {",
+											"    pm.response.to.have.status(201);",
+											"    pm.response.to.be.withBody;",
+											"    pm.response.to.be.json;",
+											"});",
+											"",
+											"const target = pm.response.json();",
+											"var query = {};",
+											"pm.request.url.query.all().forEach((param) => { query[param.key] = param.value});",
+											"",
+											"pm.test(\"Ответ должен содержать поля: id, sourceUserId, targetUserId, status, createdOn\", function () {",
+											"    pm.expect(target).to.have.property('id');",
+											"    pm.expect(target).to.have.property('sourceUserId');",
+											"    pm.expect(target).to.have.property('targetUserId');",
+											"    pm.expect(target).to.have.property('status');",
+											"    pm.expect(target).to.have.property('createdOn');",
+											"});",
+											"",
+											"pm.test(\"При создании у запроса на добавление в друзья должен быть статус WAITING\", function () {",
+											"    pm.expect(target.status).equal(\"WAITING\");",
+											"});",
+											"",
+											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {",
+											"    pm.expect(target.targetUserId).to.eql(Number(query['targetUserId']));",
+											"});",
+											"",
+											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {",
+											"    pm.expect(target.sourceUserId).to.eql(pm.collectionVariables.get('uid'));",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:sourceUserIdValue/friendshiprequests?targetUserId={{uid1}}",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":sourceUserIdValue",
+										"friendshiprequests"
+									],
+									"query": [
+										{
+											"key": "targetUserId",
+											"value": "{{uid1}}"
+										}
+									],
+									"variable": [
+										{
+											"key": "sourceUserIdValue",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Подтверждение заявки в друзья",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetnewuser = await api.addUser(rnd.getUser());\r",
+											"\r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetnewuser.id);\r",
+											"\r",
+											"        api.addFriendshipRequest(sourceuser.id, targetnewuser.id);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"var query = {};\r",
+											"pm.request.url.query.all().forEach((param) => { query[param.key] = param.value});\r",
+											"\r",
+											"pm.test(\"Ответ должен содержать поля: id, sourceUserId, targetUserId, status, createdOn\", function () {\r",
+											"    pm.expect(target).to.have.property('id');\r",
+											"    pm.expect(target).to.have.property('sourceUserId');\r",
+											"    pm.expect(target).to.have.property('targetUserId');\r",
+											"    pm.expect(target).to.have.property('status');\r",
+											"    pm.expect(target).to.have.property('createdOn');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"После подтверждения у запроса на добавление в друзья должен быть статус CONFIRMED\", function () {\r",
+											"    pm.expect(target.status).equal(\"CONFIRMED\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {\r",
+											"    pm.expect(target.targetUserId).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {\r",
+											"    pm.expect(target.sourceUserId).to.eql(pm.collectionVariables.get('uid'));\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/{{uid1}}/friendshiprequests/{{uid}}/confirm",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"{{uid1}}",
+										"friendshiprequests",
+										"{{uid}}",
+										"confirm"
+									],
+									"query": [
+										{
+											"key": "targetUserId",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Отклонение заявки в друзья",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetnewuser = await api.addUser(rnd.getUser());\r",
+											"\r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetnewuser.id);\r",
+											"\r",
+											"        api.addFriendshipRequest(sourceuser.id, targetnewuser.id);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"var query = {};\r",
+											"pm.request.url.query.all().forEach((param) => { query[param.key] = param.value});\r",
+											"\r",
+											"pm.test(\"Ответ должен содержать поля: id, sourceUserId, targetUserId, status, createdOn\", function () {\r",
+											"    pm.expect(target).to.have.property('id');\r",
+											"    pm.expect(target).to.have.property('sourceUserId');\r",
+											"    pm.expect(target).to.have.property('targetUserId');\r",
+											"    pm.expect(target).to.have.property('status');\r",
+											"    pm.expect(target).to.have.property('createdOn');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"После отклонения у запроса на добавление в друзья должен быть статус CONFIRMED\", function () {\r",
+											"    pm.expect(target.status).equal(\"DECLINED\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {\r",
+											"    pm.expect(target.targetUserId).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {\r",
+											"    pm.expect(target.sourceUserId).to.eql(pm.collectionVariables.get('uid'));\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/{{uid1}}/friendshiprequests/{{uid}}/decline",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"{{uid1}}",
+										"friendshiprequests",
+										"{{uid}}",
+										"decline"
+									],
+									"query": [
+										{
+											"key": "targetUserId",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Отмена заявки в друзья",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetnewuser = await api.addUser(rnd.getUser());\r",
+											"\r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetnewuser.id);\r",
+											"\r",
+											"         api.addFriendshipRequest(sourceuser.id, targetnewuser.id);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"var query = {};\r",
+											"pm.request.url.query.all().forEach((param) => { query[param.key] = param.value});\r",
+											"\r",
+											"pm.test(\"Ответ должен содержать поля: id, sourceUserId, targetUserId, status, createdOn\", function () {\r",
+											"    pm.expect(target).to.have.property('id');\r",
+											"    pm.expect(target).to.have.property('sourceUserId');\r",
+											"    pm.expect(target).to.have.property('targetUserId');\r",
+											"    pm.expect(target).to.have.property('status');\r",
+											"    pm.expect(target).to.have.property('createdOn');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"После отмены у запроса на добавление в друзья должен быть статус CANCELLED\", function () {\r",
+											"    pm.expect(target.status).equal(\"CANCELLED\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {\r",
+											"    pm.expect(target.targetUserId).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {\r",
+											"    pm.expect(target.sourceUserId).to.eql(pm.collectionVariables.get('uid'));\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/{{uid}}/friendshiprequests/{{uid1}}/cancel",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										"{{uid}}",
+										"friendshiprequests",
+										"{{uid1}}",
+										"cancel"
+									],
+									"query": [
+										{
+											"key": "targetUserId",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление запроса от текущего пользователя на участие в событии Copy 2",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetuser = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetuser.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser.id);\r",
+											"\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(200); \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Запрос на участие должен содержать поля: id, sourceUserId, targetUserId, status, createdOn\", function () {\r",
+											"    pm.expect(target[0]).to.have.property('id');\r",
+											"    pm.expect(target[0]).to.have.property('sourceUserId');\r",
+											"    pm.expect(target[0]).to.have.property('targetUserId');\r",
+											"    pm.expect(target[0]).to.have.property('status');\r",
+											"    pm.expect(target[0]).to.have.property('createdOn');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Входящий запрос на добавление в друзья должен быть статус WAITING\", function () {\r",
+											"    pm.expect(target[0].status).equal(\"WAITING\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {\r",
+											"    pm.expect(target[0].targetUserId).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {\r",
+											"    pm.expect(target[0].sourceUserId).to.eql(pm.collectionVariables.get('uid'));\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/friendshiprequests/incoming",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"friendshiprequests",
+										"incoming"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid1}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Добавление запроса от текущего пользователя на участие в событии Copy 3",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetuser = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetuser.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser.id);\r",
+											"\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(200); \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Запрос на участие должен содержать поля: id, sourceUserId, targetUserId, status, createdOn\", function () {\r",
+											"    pm.expect(target[0]).to.have.property('id');\r",
+											"    pm.expect(target[0]).to.have.property('sourceUserId');\r",
+											"    pm.expect(target[0]).to.have.property('targetUserId');\r",
+											"    pm.expect(target[0]).to.have.property('status');\r",
+											"    pm.expect(target[0]).to.have.property('createdOn');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Исходящий запрос на добавление в друзья должен быть статус WAITING\", function () {\r",
+											"    pm.expect(target[0].status).equal(\"WAITING\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {\r",
+											"    pm.expect(target[0].targetUserId).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {\r",
+											"    pm.expect(target[0].sourceUserId).to.eql(pm.collectionVariables.get('uid'));\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/friendshiprequests/outcoming",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"friendshiprequests",
+										"outcoming"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Friendship",
+			"item": [
+				{
+					"name": "Bad request check",
+					"item": [
+						{
+							"name": "Получение списка друзей без требуемых параметров",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    try {\r",
+											"        pm.collectionVariables.set('uid', null);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userid/friendships",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userid",
+										"friendships"
+									],
+									"variable": [
+										{
+											"key": "userid",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Попытка удалить из друзей с некорректными параметрами",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    try {\r",
+											"        pm.collectionVariables.set('uid', null);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:user1/friendships/:user2",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":user1",
+										"friendships",
+										":user2"
+									],
+									"variable": [
+										{
+											"key": "user1",
+											"value": "{{uid}}"
+										},
+										{
+											"key": "user2",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Correct requests",
+					"item": [
+						{
+							"name": "Просмотр списка друзей",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetuser = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetuser.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser.id);\r",
+											"        await api.confirmFriendshipRequest(targetuser.id, sourceuser.id);\r",
+											"\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(200); \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Список друзей должен содержать поле friendlistEntries\", function () {\r",
+											"    pm.expect(target).to.have.property('friendlistEntries');\r",
+											"\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Список друзей должен содержать поля user.id, user.name\", function () {\r",
+											"    pm.expect(target.friendlistEntries[0].user).to.have.property('id');\r",
+											"    pm.expect(target.friendlistEntries[0].user).to.have.property('name');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Должен быть найден только один пользователь по заданному фильтру\", function () {\r",
+											"    pm.expect(target.friendlistEntries.length).to.eql(1);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userid/friendships",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userid",
+										"friendships"
+									],
+									"variable": [
+										{
+											"key": "userid",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Удаление из друзей после добавления",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetuser = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetuser.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser.id);\r",
+											"        await api.confirmFriendshipRequest(targetuser.id, sourceuser.id);\r",
+											"\r",
+											"\r",
+											"        const friendlist = api.getFriendlist(sourceuser.id);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 204 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:user1/friendships/:user2",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":user1",
+										"friendships",
+										":user2"
+									],
+									"variable": [
+										{
+											"key": "user1",
+											"value": "{{uid}}"
+										},
+										{
+											"key": "user2",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Subscriptions",
+			"item": [
+				{
+					"name": "Bad requests",
+					"item": [
+						{
+							"name": "Создание подписки с неверным набором параметров",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    try {\r",
+											"        pm.collectionVariables.set('uid', null);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:user/subscriptions/:user1/subscribe",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":user",
+										"subscriptions",
+										":user1",
+										"subscribe"
+									],
+									"variable": [
+										{
+											"key": "user",
+											"value": "{{uid}}"
+										},
+										{
+											"key": "user1",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Просмотр подписок с неверными параметрами",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    try {\r",
+											"        pm.collectionVariables.set('uid', null);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:user/subscriptions",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":user",
+										"subscriptions"
+									],
+									"variable": [
+										{
+											"key": "user",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Попытка удалить подписку с неверными параметрами",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    try {\r",
+											"        pm.collectionVariables.set('uid', null);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:user1/subscriptions/:user2/unsubscribe",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":user1",
+										"subscriptions",
+										":user2",
+										"unsubscribe"
+									],
+									"variable": [
+										{
+											"key": "user1",
+											"value": "{{uid}}"
+										},
+										{
+											"key": "user2",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Просмотр событий по подписке с неверными параметрами",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    try {\r",
+											"        pm.collectionVariables.set('uid', null);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "http://localhost:8080/users/:user/subsevents",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"users",
+										":user",
+										"subsevents"
+									],
+									"variable": [
+										{
+											"key": "user",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Просмотр событий по подписке с неверными параметрами Copy",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    try {\r",
+											"        pm.collectionVariables.set('uid', null);\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:user/subsevents/:user1",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":user",
+										"subsevents",
+										":user1"
+									],
+									"variable": [
+										{
+											"key": "user",
+											"value": "{{uid}}"
+										},
+										{
+											"key": "user1",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Создание подписки в отсутствие дружбы",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"   try {\r",
+											"        const newuser = await api.addUser(rnd.getUser());\r",
+											"        const newuser2 = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', newuser.id);\r",
+											"        pm.collectionVariables.set('uid1', newuser2.id);\r",
+											"\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function () {\r",
+											"    pm.response.to.be.badRequest;    \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:user/subscriptions/:user1/subscribe",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":user",
+										"subscriptions",
+										":user1",
+										"subscribe"
+									],
+									"variable": [
+										{
+											"key": "user",
+											"value": "{{uid}}"
+										},
+										{
+											"key": "user1",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Correct requests",
+					"item": [
+						{
+							"name": "Создание подписки",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetuser = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetuser.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser.id);\r",
+											"        await api.confirmFriendshipRequest(targetuser.id, sourceuser.id);\r",
+											"\r",
+											"\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(201); \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Ответ должен содержать поля: id, sourceUserId, targetUserId, status, createdOn\", function () {\r",
+											"    pm.expect(target).to.have.property('targetUser');\r",
+											"    pm.expect(target).to.have.property('createdOn');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"id пользователя из ответа должен быть равным id пользователя, на которого подписываются\", function () {\r",
+											"    pm.expect(target.targetUser.id).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:user/subscriptions/:user1/subscribe",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":user",
+										"subscriptions",
+										":user1",
+										"subscribe"
+									],
+									"variable": [
+										{
+											"key": "user",
+											"value": "{{uid}}"
+										},
+										{
+											"key": "user1",
+											"value": "{{uid1}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Просмотр подписок пользователя",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetuser = await api.addUser(rnd.getUser());\r",
+											"        const targetuser2 = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetuser.id);\r",
+											"        pm.collectionVariables.set('uid2', targetuser2.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser.id);\r",
+											"        await api.confirmFriendshipRequest(targetuser.id, sourceuser.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser2.id);\r",
+											"        await api.confirmFriendshipRequest(targetuser2.id, sourceuser.id);\r",
+											"\r",
+											"        await api.createSubscription(sourceuser.id, targetuser.id);\r",
+											"        await api.createSubscription(sourceuser.id, targetuser2.id);\r",
+											"        \r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(200);   \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Ответ должен содержать две записи\", function () {\r",
+											"    pm.expect(target.length).to.eql(2);\r",
+											"});\r",
+											"\r",
+											"\r",
+											"pm.test(\"Ответ должен содержать поля: id, sourceUserId, targetUserId, status, createdOn\", function () {\r",
+											"    pm.expect(target[0]).to.have.property('targetUser');\r",
+											"    pm.expect(target[0]).to.have.property('createdOn');\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Ответ должен содержать поля: id, sourceUserId, targetUserId, status, createdOn\", function () {\r",
+											"    pm.expect(target[0].targetUser.id).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"    pm.expect(target[1].targetUser.id).to.eql(pm.collectionVariables.get('uid2'));\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:user/subscriptions",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":user",
+										"subscriptions"
+									],
+									"variable": [
+										{
+											"key": "user",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Удаление подписки",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        const targetuser = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', targetuser.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser.id);\r",
+											"        await api.confirmFriendshipRequest(targetuser.id, sourceuser.id);\r",
+											"\r",
+											"        await api.createSubscription(sourceuser.id, targetuser.id);\r",
+											"\r",
+											"\r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 204 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(204);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:user1/subscriptions/:user2/unsubscribe",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":user1",
+										"subscriptions",
+										":user2",
+										"unsubscribe"
+									],
+									"variable": [
+										{
+											"key": "user1",
+											"value": "{{uid}}"
+										},
+										{
+											"key": "user2",
+											"value": "{{uid1}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Просмотр событий с участием пользователей на которых подписаны",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const initiatoruser = await api.addUser(rnd.getUser());\r",
+											"        \r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        \r",
+											"        const targetuser = await api.addUser(rnd.getUser());\r",
+											"        const targetuser2 = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', initiatoruser.id);\r",
+											"        pm.collectionVariables.set('uid2', targetuser.id);\r",
+											"        pm.collectionVariables.set('uid3', targetuser2.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser.id);\r",
+											"        await api.confirmFriendshipRequest(targetuser.id, sourceuser.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser2.id);\r",
+											"        await api.confirmFriendshipRequest(targetuser2.id, sourceuser.id);\r",
+											"\r",
+											"        await api.createSubscription(sourceuser.id, targetuser.id);\r",
+											"        await api.createSubscription(sourceuser.id, targetuser2.id);\r",
+											"\r",
+											"        const category1 = await api.addCategory(rnd.getCategory());\r",
+											"        const category2 = await api.addCategory(rnd.getCategory());\r",
+											"\r",
+											"        let event1Body = rnd.getEvent(category2.id);\r",
+											"        event1Body['requestModeration'] = true\r",
+											"\r",
+											"        let event2Body = rnd.getEvent(category1.id);\r",
+											"        event2Body['requestModeration'] = true\r",
+											"\r",
+											"        let event3Body = rnd.getEvent(category2.id);\r",
+											"        event3Body['requestModeration'] = true\r",
+											"\r",
+											"        const event1 = await api.addEvent(initiatoruser.id, event1Body);\r",
+											"        const event2 = await api.addEvent(initiatoruser.id, event2Body);\r",
+											"        const event3 = await api.addEvent(initiatoruser.id, event3Body);\r",
+											"\r",
+											"        await api.publishEvent(event1.id);\r",
+											"        await api.publishEvent(event2.id);\r",
+											"        await api.publishEvent(event3.id);\r",
+											"\r",
+											"        const req1 = await api.publishParticipationRequest(event1.id, targetuser.id);\r",
+											"        const req2 = await api.publishParticipationRequest(event2.id, targetuser.id);\r",
+											"        const req3 = await api.publishParticipationRequest(event3.id, targetuser2.id);\r",
+											"\r",
+											"        await api.acceptParticipationRequest(event1.id, initiatoruser.id, req1.id);\r",
+											"        await api.acceptParticipationRequest(event2.id, initiatoruser.id, req2.id);\r",
+											"        await api.acceptParticipationRequest(event3.id, initiatoruser.id, req3.id);\r",
+											"\r",
+											"        pm.collectionVariables.set('eid1', event1.id);\r",
+											"        pm.collectionVariables.set('eid2', event2.id);\r",
+											"        pm.collectionVariables.set('eid3', event3.id);\r",
+											"        \r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(200);   \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Ответ должен содержать две записи\", function () {\r",
+											"    pm.expect(target.length).to.eql(3);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Ответ содержит записи событий в порядке возрастания id\", function () {\r",
+											"    pm.expect(target[0].id).to.eql(pm.collectionVariables.get('eid1'));\r",
+											"    pm.expect(target[1].id).to.eql(pm.collectionVariables.get('eid2'));\r",
+											"    pm.expect(target[2].id).to.eql(pm.collectionVariables.get('eid3'));\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userId/subsevents",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userId",
+										"subsevents"
+									],
+									"variable": [
+										{
+											"key": "userId",
+											"value": "{{uid}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						},
+						{
+							"name": "Просмотр событий с участием пользователя из подписки",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const main = async () => {\r",
+											"    const api = new API(pm);\r",
+											"    const rnd = new RandomUtils();\r",
+											"\r",
+											"    try {\r",
+											"        const initiatoruser = await api.addUser(rnd.getUser());\r",
+											"        \r",
+											"        const sourceuser = await api.addUser(rnd.getUser());\r",
+											"        \r",
+											"        const targetuser = await api.addUser(rnd.getUser());\r",
+											"        const targetuser2 = await api.addUser(rnd.getUser());\r",
+											"       \r",
+											"        pm.collectionVariables.set('uid', sourceuser.id);\r",
+											"        pm.collectionVariables.set('uid1', initiatoruser.id);\r",
+											"        pm.collectionVariables.set('uid2', targetuser.id);\r",
+											"        pm.collectionVariables.set('uid3', targetuser2.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser.id);\r",
+											"        await api.confirmFriendshipRequest(targetuser.id, sourceuser.id);\r",
+											"\r",
+											"        await api.addFriendshipRequest(sourceuser.id, targetuser2.id);\r",
+											"        await api.confirmFriendshipRequest(targetuser2.id, sourceuser.id);\r",
+											"\r",
+											"        await api.createSubscription(sourceuser.id, targetuser.id);\r",
+											"        await api.createSubscription(sourceuser.id, targetuser2.id);\r",
+											"\r",
+											"        const category1 = await api.addCategory(rnd.getCategory());\r",
+											"        const category2 = await api.addCategory(rnd.getCategory());\r",
+											"\r",
+											"        let event1Body = rnd.getEvent(category2.id);\r",
+											"        event1Body['requestModeration'] = true\r",
+											"\r",
+											"        let event2Body = rnd.getEvent(category1.id);\r",
+											"        event2Body['requestModeration'] = true\r",
+											"\r",
+											"        let event3Body = rnd.getEvent(category2.id);\r",
+											"        event3Body['requestModeration'] = true\r",
+											"\r",
+											"        const event1 = await api.addEvent(initiatoruser.id, event1Body);\r",
+											"        const event2 = await api.addEvent(initiatoruser.id, event2Body);\r",
+											"        const event3 = await api.addEvent(initiatoruser.id, event3Body);\r",
+											"\r",
+											"        await api.publishEvent(event1.id);\r",
+											"        await api.publishEvent(event2.id);\r",
+											"        await api.publishEvent(event3.id);\r",
+											"\r",
+											"        const req1 = await api.publishParticipationRequest(event1.id, targetuser.id);\r",
+											"        const req2 = await api.publishParticipationRequest(event2.id, targetuser.id);\r",
+											"        const req3 = await api.publishParticipationRequest(event3.id, targetuser2.id);\r",
+											"\r",
+											"        await api.acceptParticipationRequest(event1.id, initiatoruser.id, req1.id);\r",
+											"        await api.acceptParticipationRequest(event2.id, initiatoruser.id, req2.id);\r",
+											"        await api.acceptParticipationRequest(event3.id, initiatoruser.id, req3.id);\r",
+											"\r",
+											"        pm.collectionVariables.set('eid1', event1.id);\r",
+											"        pm.collectionVariables.set('eid2', event2.id);\r",
+											"        pm.collectionVariables.set('eid3', event3.id);\r",
+											"        \r",
+											"    } catch(err) {\r",
+											"        console.error(\"Ошибка при подготовке тестовых данных.\", err);\r",
+											"    }\r",
+											"};\r",
+											"\r",
+											"const interval = setInterval(() => {}, 1000);\r",
+											"\r",
+											"setTimeout(async () => \r",
+											"    {\r",
+											"        try {\r",
+											"            // выполняем наш скрипт\r",
+											"            await main();\r",
+											"        } catch (e) {\r",
+											"            console.error(e);\r",
+											"        } finally {\r",
+											"            clearInterval(interval);\r",
+											"        }\r",
+											"    },  \r",
+											"    100 \r",
+											");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function () {\r",
+											"    pm.response.to.have.status(200);   \r",
+											"    pm.response.to.be.withBody;\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"const target = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Ответ должен содержать две записи\", function () {\r",
+											"    pm.expect(target.length).to.eql(2);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Ответ содержит записи событий в порядке возрастания id\", function () {\r",
+											"    pm.expect(target[0].id).to.eql(pm.collectionVariables.get('eid1'));\r",
+											"    pm.expect(target[1].id).to.eql(pm.collectionVariables.get('eid2'));\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/users/:userid/subsevents/:targetUserId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"users",
+										":userid",
+										"subsevents",
+										":targetUserId"
+									],
+									"variable": [
+										{
+											"key": "userid",
+											"value": "{{uid}}"
+										},
+										{
+											"key": "targetUserId",
+											"value": "{{uid2}}"
+										}
+									]
+								},
+								"description": "Обратите внимание:\n- нельзя добавить повторный запрос\n- инициатор события не может добавить запрос на участие в своём событии\n- нельзя участвовать в неопубликованном событии\n- если у события достигнут лимит запросов на участие - необходимо вернуть ошибку\n- если для события отключена пре-модерация запросов на участие, то запрос должен автоматически перейти в состояние подтвержденного"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					"API = class {\r",
+					"    constructor(postman, verbose = false, baseUrl = \"http://localhost:8080\") {\r",
+					"        this.baseUrl = baseUrl;\r",
+					"        this.pm = postman;\r",
+					"        this._verbose = verbose;\r",
+					"    }\r",
+					"\r",
+					"    async addUser(user, verbose=null) {\r",
+					"        return this.post(\"/admin/users\", user, \"Ошибка при добавлении нового пользователя: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async addCategory(category, verbose=null) {\r",
+					"        return this.post(\"/admin/categories\", category, \"Ошибка при добавлении новой категории: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async addEvent(userId, event, verbose=null) {\r",
+					"        return this.post(\"/users/\" + userId + \"/events\", event, \"Ошибка при добавлении нового события: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async addFriendshipRequest(sourceUserId, targetUserId, verbose=null) {\r",
+					"        return this.post(\"/users/\" + sourceUserId + \"/friendshiprequests?targetUserId=\"+targetUserId , \"Ошибка при добавлении нового запроса в друзья: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async confirmFriendshipRequest(userId, sourceUserId, verbose=null) {\r",
+					"        return this.patch(\"/users/\" + userId + \"/friendshiprequests/\" + sourceUserId + \"/confirm\" , \"Ошибка при подтверждении новой заявки в друзья: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async createSubscription(sourceUserId, targetUserId, verbose=null) {\r",
+					"        return this.post(\"/users/\" + sourceUserId + \"/subscriptions/\" + targetUserId + \"/subscribe\" , \"Ошибка при добавлении нового запроса в друзья: \", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async getFriendlist(userId, verbose=null) {\r",
+					"        return this.get('/users/' + userId + '/friendships', null, \"Ошибка при поиске события по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async publishParticipationRequest(eventId, userId, verbose=null) {\r",
+					"        return this.post('/users/' + userId + '/requests?eventId=' + eventId, null, \"Ошибка при добавлении нового запроса на участие в событии\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async publishEvent(eventId, verbose=null) {\r",
+					"        return this.patch('/admin/events/' + eventId, {stateAction: \"PUBLISH_EVENT\"}, \"Ошибка при публикации события\", verbose);\r",
+					"    }\r",
+					"    \r",
+					"    async rejectEvent(eventId, verbose=null) {\r",
+					"        return this.patch('/admin/events/' + eventId, {stateAction: \"REJECT_EVENT\"}, \"Ошибка при отмене события\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async acceptParticipationRequest(eventId, userId, reqId, verbose=null) {\r",
+					"        return this.patch('/users/' + userId + '/events/' + eventId + '/requests/', {requestIds:[reqId], status: \"CONFIRMED\"}, \"Ошибка при принятии заявки на участие в событии\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findEvent(eventId, verbose=null) {\r",
+					"        return this.get('/events/' + eventId, null, \"Ошибка при поиске события по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async findUser(userId, verbose=null) {\r",
+					"        return this.get('/admin/users?ids=' + userId, null, \"Ошибка при поиске пользователя по id\", verbose);\r",
+					"    }\r",
+					"\r",
+					"    async post(path, body, errorText = \"Ошибка при выполнении post-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"POST\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"\r",
+					"    async patch(path, body = null, errorText = \"Ошибка при выполнении patch-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"PATCH\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"\r",
+					"    async get(path, body = null, errorText = \"Ошибка при выполнении get-запроса: \", verbose=null) {\r",
+					"        return this.sendRequest(\"GET\", path, body, errorText, verbose);\r",
+					"    }\r",
+					"    async sendRequest(method, path, body=null, errorText = \"Ошибка при выполнении запроса: \", verbose=null) {\r",
+					"        return new Promise((resolve, reject) => {\r",
+					"            verbose = verbose == null ? this._verbose : verbose;\r",
+					"            const request = {\r",
+					"                url: this.baseUrl + path,\r",
+					"                method: method,\r",
+					"                body: body == null ? \"\" : JSON.stringify(body),\r",
+					"                header: { \"Content-Type\": \"application/json\" },\r",
+					"            };\r",
+					"            if(verbose) {\r",
+					"                console.log(\"Отправляю запрос: \", request);\r",
+					"            }\r",
+					"\r",
+					"            try {\r",
+					"                this.pm.sendRequest(request, (error, response) => {\r",
+					"                    if(error || (response.code >= 400 && response.code <= 599)) {\r",
+					"                        let err = error ? error : JSON.stringify(response.json());\r",
+					"                        console.error(\"При выполнении запроса к серверу возникла ошика.\\n\", err,\r",
+					"                             \"\\nДля отладки проблемы повторите такой же запрос к вашей программе \" + \r",
+					"                             \"на локальном компьютере. Данные запроса:\\n\", JSON.stringify(request));\r",
+					"\r",
+					"                        reject(new Error(errorText + err));\r",
+					"                    }\r",
+					"                    if(verbose) {\r",
+					"                        console.log(\"Результат обработки запроса: код состояния - \", response.code, \", тело: \", response.json());\r",
+					"                    }\r",
+					"                    if (response.stream.length === 0){\r",
+					"                        reject(new Error('Отправлено пустое тело ответа'))\r",
+					"                    }else{\r",
+					"                        resolve(response.json());\r",
+					"                    }\r",
+					"                });\r",
+					"                \r",
+					"            } catch(err) {\r",
+					"                if(verbose) {\r",
+					"                    console.error(errorText, err);\r",
+					"                }\r",
+					"                return Promise.reject(err);\r",
+					"            }\r",
+					"        });\r",
+					"    }\r",
+					"};\r",
+					"RandomUtils = class {\r",
+					"    constructor() {}\r",
+					"\r",
+					"    getUser() {\r",
+					"        return {\r",
+					"            name: pm.variables.replaceIn('{{$randomFullName}}'),\r",
+					"            email: pm.variables.replaceIn('{{$randomEmail}}')\r",
+					"        };\r",
+					"    }\r",
+					"\r",
+					"    getCategory() {\r",
+					"        return {\r",
+					"            name: pm.variables.replaceIn('{{$randomWord}}') + Math.floor(Math.random() * 10000 * Math.random()).toString()\r",
+					"        };\r",
+					"    }\r",
+					"\r",
+					"    getEvent(categoryId) {\r",
+					"        return {\r",
+					"            annotation: pm.variables.replaceIn('{{$randomLoremParagraph}}'),\r",
+					"            category: categoryId,\r",
+					"            description: pm.variables.replaceIn('{{$randomLoremParagraphs}}'),\r",
+					"            eventDate: this.getFutureDateTime(),\r",
+					"            location: {\r",
+					"                lat: parseFloat(pm.variables.replaceIn('{{$randomLatitude}}')),\r",
+					"                lon: parseFloat(pm.variables.replaceIn('{{$randomLongitude}}')),\r",
+					"            },\r",
+					"            paid: pm.variables.replaceIn('{{$randomBoolean}}'),\r",
+					"            participantLimit: pm.variables.replaceIn('{{$randomInt}}'),\r",
+					"            requestModeration: pm.variables.replaceIn('{{$randomBoolean}}'),\r",
+					"            title: pm.variables.replaceIn('{{$randomLoremSentence}}'),\r",
+					"        }\r",
+					"    }\r",
+					"\r",
+					"    getFutureDateTime(hourShift = 5, minuteShift=0, yearShift=0) {\r",
+					"        let moment = require('moment');\r",
+					"\r",
+					"        let m = moment();\r",
+					"        m.add(hourShift, 'hour');\r",
+					"        m.add(minuteShift, 'minute');\r",
+					"        m.add(yearShift, 'year');\r",
+					"\r",
+					"        return m.format('YYYY-MM-DD HH:mm:ss');\r",
+					"    }\r",
+					"\r",
+					"    getWord(length = 1) {\r",
+					"        let result = '';\r",
+					"        const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';\r",
+					"        const charactersLength = characters.length;\r",
+					"        let counter = 0;\r",
+					"        while (counter < length) {\r",
+					"            result += characters.charAt(Math.floor(Math.random() * charactersLength));\r",
+					"            counter += 1;\r",
+					"        }\r",
+					"        return result;\r",
+					"    }\r",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "catid",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "request_body",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "response",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "uid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "eid1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "reqid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "uid1",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "responseArr",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "uid2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "uid3",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "eid2",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "eid3",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

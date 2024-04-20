@@ -78,4 +78,22 @@ public class ErrorHandler {
         );
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleWrongUserData(final FriendshipRequestValidationException e) {
+        log.error(String.format(e.getMessage()));
+        return new ExceptionResponse(
+                String.format(e.getMessage())
+        );
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ExceptionResponse handleWrongUserData(final SubscriptionValidationException e) {
+        log.error(String.format(e.getMessage()));
+        return new ExceptionResponse(
+                String.format(e.getMessage())
+        );
+    }
+
 }

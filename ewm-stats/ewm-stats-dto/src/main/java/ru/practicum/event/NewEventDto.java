@@ -17,4 +17,20 @@ public class NewEventDto {
     private Integer participantLimit;
     private Boolean requestModeration;
     private String title;
+
+    @Override
+    public String toString() {
+        return "NewEventDto{" +
+                "id=" + id +
+                ", annotation='" + annotation + '\'' +
+                ", category=" + category +
+                ", description='" + description + '\'' +
+                ", eventDate='" + eventDate + '\'' +
+                ", location=" + location +
+                ", paid=" + paid +
+                ", participantLimit=" + participantLimit +
+                ", requestModeration=" + requestModeration +
+                ", title='" + title + '\'' +
+                '}';
+    }
 }
