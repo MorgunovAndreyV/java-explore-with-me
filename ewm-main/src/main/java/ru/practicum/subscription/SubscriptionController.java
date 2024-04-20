@@ -49,5 +49,4 @@ public class SubscriptionController {
         subscriptionService.unsubscribe(userId, targetUserId);
     }
 
-
 }

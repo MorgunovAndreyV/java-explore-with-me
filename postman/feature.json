@@ -440,11 +440,11 @@
 											"});",
 											"",
 											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {",
-											"    pm.expect(target.targetUserId).to.eql(Number(query['targetUserId']));",
+											"    pm.expect(target.targetUserId.toString()).equal(Number(query['targetUserId']).toString());",
 											"});",
 											"",
 											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {",
-											"    pm.expect(target.sourceUserId).to.eql(pm.collectionVariables.get('uid'));",
+											"    pm.expect(target.sourceUserId.toString()).equal(pm.collectionVariables.get('uid').toString());",
 											"});"
 										],
 										"type": "text/javascript",
@@ -558,11 +558,11 @@
 											"});\r",
 											"\r",
 											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {\r",
-											"    pm.expect(target.targetUserId).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"    pm.expect(target.targetUserId.toString()).equal(pm.collectionVariables.get('uid1').toString());\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {\r",
-											"    pm.expect(target.sourceUserId).to.eql(pm.collectionVariables.get('uid'));\r",
+											"    pm.expect(target.sourceUserId.toString()).equal(pm.collectionVariables.get('uid').toString());\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -673,11 +673,11 @@
 											"});\r",
 											"\r",
 											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {\r",
-											"    pm.expect(target.targetUserId).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"    pm.expect(target.targetUserId.toString()).equal(pm.collectionVariables.get('uid1').toString());\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {\r",
-											"    pm.expect(target.sourceUserId).to.eql(pm.collectionVariables.get('uid'));\r",
+											"    pm.expect(target.sourceUserId.toString()).equal(pm.collectionVariables.get('uid').toString());\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -788,11 +788,11 @@
 											"});\r",
 											"\r",
 											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {\r",
-											"    pm.expect(target.targetUserId).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"    pm.expect(target.targetUserId.toString()).equal(pm.collectionVariables.get('uid1').toString());\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {\r",
-											"    pm.expect(target.sourceUserId).to.eql(pm.collectionVariables.get('uid'));\r",
+											"    pm.expect(target.sourceUserId.toString()).equal(pm.collectionVariables.get('uid').toString());\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -833,7 +833,7 @@
 							"response": []
 						},
 						{
-							"name": "Добавление запроса от текущего пользователя на участие в событии Copy 2",
+							"name": "Просмотр входящих заявок на добавление в друзья",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -902,11 +902,11 @@
 											"});\r",
 											"\r",
 											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {\r",
-											"    pm.expect(target[0].targetUserId).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"    pm.expect(target[0].targetUserId.toString()).equal(pm.collectionVariables.get('uid1').toString());\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {\r",
-											"    pm.expect(target[0].sourceUserId).to.eql(pm.collectionVariables.get('uid'));\r",
+											"    pm.expect(target[0].sourceUserId.toString()).equal(pm.collectionVariables.get('uid').toString());\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -945,7 +945,7 @@
 							"response": []
 						},
 						{
-							"name": "Добавление запроса от текущего пользователя на участие в событии Copy 3",
+							"name": "Просмотр исходящих заявок на добавление в друзья",
 							"event": [
 								{
 									"listen": "prerequest",
@@ -1014,11 +1014,11 @@
 											"});\r",
 											"\r",
 											"pm.test(\"Id пользователя получателя в запросе и в ответе должны совпадать\", function () {\r",
-											"    pm.expect(target[0].targetUserId).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"    pm.expect(target[0].targetUserId.toString()).equal(pm.collectionVariables.get('uid1').toString());\r",
 											"});\r",
 											"\r",
 											"pm.test(\"Id пользователя автора заявки в запросе и в ответе должны совпадать\", function () {\r",
-											"    pm.expect(target[0].sourceUserId).to.eql(pm.collectionVariables.get('uid'));\r",
+											"    pm.expect(target[0].sourceUserId.toString()).equal(pm.collectionVariables.get('uid').toString());\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -2023,7 +2023,7 @@
 											"});\r",
 											"\r",
 											"pm.test(\"id пользователя из ответа должен быть равным id пользователя, на которого подписываются\", function () {\r",
-											"    pm.expect(target.targetUser.id).to.eql(pm.collectionVariables.get('uid1'));\r",
+											"    pm.expect(target.targetUser.id.toString()).equal(pm.collectionVariables.get('uid1').toString());\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -2143,8 +2143,8 @@
 											"});\r",
 											"\r",
 											"pm.test(\"Ответ должен содержать поля: id, sourceUserId, targetUserId, status, createdOn\", function () {\r",
-											"    pm.expect(target[0].targetUser.id).to.eql(pm.collectionVariables.get('uid1'));\r",
-											"    pm.expect(target[1].targetUser.id).to.eql(pm.collectionVariables.get('uid2'));\r",
+											"    pm.expect(target[0].targetUser.id.toString()).equal(pm.collectionVariables.get('uid1').toString());\r",
+											"    pm.expect(target[1].targetUser.id.toString()).equal(pm.collectionVariables.get('uid2').toString());\r",
 											"});\r",
 											"\r",
 											""
@@ -2387,9 +2387,9 @@
 											"});\r",
 											"\r",
 											"pm.test(\"Ответ содержит записи событий в порядке возрастания id\", function () {\r",
-											"    pm.expect(target[0].id).to.eql(pm.collectionVariables.get('eid1'));\r",
-											"    pm.expect(target[1].id).to.eql(pm.collectionVariables.get('eid2'));\r",
-											"    pm.expect(target[2].id).to.eql(pm.collectionVariables.get('eid3'));\r",
+											"    pm.expect(target[0].id.toString()).equal(pm.collectionVariables.get('eid1').toString());\r",
+											"    pm.expect(target[1].id.toString()).equal(pm.collectionVariables.get('eid2').toString());\r",
+											"    pm.expect(target[2].id.toString()).equal(pm.collectionVariables.get('eid3').toString());\r",
 											"});"
 										],
 										"type": "text/javascript",
@@ -2533,8 +2533,8 @@
 											"});\r",
 											"\r",
 											"pm.test(\"Ответ содержит записи событий в порядке возрастания id\", function () {\r",
-											"    pm.expect(target[0].id).to.eql(pm.collectionVariables.get('eid1'));\r",
-											"    pm.expect(target[1].id).to.eql(pm.collectionVariables.get('eid2'));\r",
+											"    pm.expect(target[0].id.toString()).equal(pm.collectionVariables.get('eid1').toString());\r",
+											"    pm.expect(target[1].id.toString()).equal(pm.collectionVariables.get('eid2').toString());\r",
 											"});"
 										],
 										"type": "text/javascript",
