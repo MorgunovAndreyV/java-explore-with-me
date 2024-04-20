@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.EwmMainService;
+import ru.practicum.comparators.EventComparators;
 import ru.practicum.event.model.State;
 import ru.practicum.exception.EventValidationException;
 import ru.practicum.stat.client.EndpointHitClient;
@@ -43,6 +44,29 @@ public class EventController {
     public EventFullDto getUserEventFull(@PathVariable Long userId,
                                          @PathVariable Long eventId) {
         return EventMapper.toFullDto(eventService.getUsersEventFull(userId, eventId));
+    }
+
+    @GetMapping("/users/{userId}/subsevents")
+    public List<EventFullDto> getUsersEventsForSubsALLPaginated(@PathVariable Long userId,
+                                                                @RequestParam(defaultValue = "0", required = false) Integer from,
+                                                                @RequestParam(defaultValue = "10", required = false) Integer size) {
+
+
+        return eventService.getUsersEventsForSubsPaginated(userId, from, size)
+                .stream()
+                .sorted(EventComparators.compareEventsById)
+                .map(EventMapper::toFullDto).collect(Collectors.toList());
+    }
+
+    @GetMapping("/users/{userId}/subsevents/{targetUserId}")
+    public List<EventFullDto> getUsersEventsForSubPaginated(@PathVariable Long userId,
+                                                            @PathVariable Long targetUserId,
+                                                            @RequestParam(defaultValue = "0", required = false) Integer from,
+                                                            @RequestParam(defaultValue = "10", required = false) Integer size) {
+        return eventService.getUsersEventsForSubsPaginated(userId, targetUserId, from, size)
+                .stream()
+                .sorted(EventComparators.compareEventsById)
+                .map(EventMapper::toFullDto).collect(Collectors.toList());
     }
 
     @PostMapping("/users/{userId}/events")

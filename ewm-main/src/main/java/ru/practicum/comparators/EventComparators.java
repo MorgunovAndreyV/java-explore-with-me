@@ -41,4 +41,21 @@ public class EventComparators {
 
     };
 
+    public static final Comparator<Event> compareEventsById = (event1, event2) -> {
+        if (event1.getId() != null && event2.getId() != null) {
+            return event1.getId().compareTo(event2.getId());
+
+        } else if (event1.getId() == null && event2.getId() != null) {
+            return -1;
+
+        } else if (event1.getId() != null) {
+            return 1;
+
+        } else {
+            return 0;
+
+        }
+
+    };
+
 }

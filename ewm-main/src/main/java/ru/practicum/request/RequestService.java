@@ -30,6 +30,17 @@ public class RequestService {
                 .collect(Collectors.toList());
     }
 
+    public List<Request> getUserRequestsForState(Long userId, State state) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder(QRequest.request.requesterId.eq(userId));
+
+        if (state != null) {
+            booleanBuilder.and(QRequest.request.state.eq(state));
+        }
+
+        return StreamSupport.stream(requestRepository.findAll(booleanBuilder).spliterator(), false)
+                .collect(Collectors.toList());
+    }
+
     Request addNewRequest(Long userId, Long eventId) {
         BooleanBuilder booleanBuilder = new BooleanBuilder(QRequest.request.requesterId.eq(userId)
                 .and(QRequest.request.eventId.eq(eventId)));

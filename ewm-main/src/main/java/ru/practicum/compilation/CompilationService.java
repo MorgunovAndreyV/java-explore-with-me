@@ -48,7 +48,8 @@ public class CompilationService {
         return compilationFromBase;
     }
 
-    public Compilation changeCompilationData(Long id, UpdateCompilationRequest compilationDto) throws RecordNotFoundException {
+    public Compilation changeCompilationData(Long id, UpdateCompilationRequest compilationDto)
+            throws RecordNotFoundException {
         Compilation categoryFromBase = getCompilationById(id);
 
         validateCompilationUpdateInformation(compilationDto);
